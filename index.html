@@ -33,14 +33,14 @@
         <!-- Hidden Audio Element -->
         <audio id="audioElement" crossorigin="anonymous" preload="auto"></audio>
 
-        <!-- PLAYER TAB -->
+        <!-- 1. PLAYER TAB -->
         <div id="content-player" class="tab-content flex flex-col px-6 pb-6 space-y-5 z-10">
             <div class="bg-gradient-to-b from-slate-100 to-white p-5 rounded-3xl border border-slate-200 text-center shadow-sm relative overflow-hidden">
                 <div class="w-20 h-20 mx-auto mb-3 bg-gradient-to-tr from-amber-500/20 via-teal-500/20 to-blue-500/20 rounded-2xl border border-slate-300 flex items-center justify-center shadow-md relative">
                     <span class="text-3xl">🎧</span>
                 </div>
                 <h2 id="current-song-title" class="text-sm font-bold text-slate-900 truncate px-2 tracking-tight">No Song Selected</h2>
-                <p id="playback-status-msg" class="text-xs text-emerald-600 font-medium mt-1">Go to File tab to add music</p>
+                <p id="playback-status-msg" class="text-xs text-emerald-600 font-medium mt-1">Select a song from Library or File tab</p>
             </div>
 
             <!-- Time Progress Bar -->
@@ -54,94 +54,88 @@
                 </div>
             </div>
 
-            <!-- Volume Slider Card inside Player Tab -->
+            <!-- Volume Slider Card -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-2 shadow-xs">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold text-slate-700 flex items-center space-x-1.5">
-                        <span>🔊</span> <span>Volume</span>
+                        <span>🔊</span>
+                        <span>Volume</span>
                     </span>
                     <span id="vol-label" class="text-xs text-emerald-600 font-extrabold">100%</span>
                 </div>
-                <input type="range" min="0" max="1" step="0.02" value="1" oninput="changeVolume(this.value)" class="w-full accent-emerald-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
+                <input type="range" id="volume-slider" min="0" max="100" value="100" oninput="changeVolume(this.value)" class="w-full accent-emerald-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
             </div>
 
-            <!-- Main Playback Controls -->
-            <div class="flex items-center justify-center space-x-2.5 pt-1">
-                <button onclick="prevSong()" class="w-11 h-11 bg-white border border-slate-300 rounded-2xl flex items-center justify-center text-xs shadow-sm hover:bg-slate-50 transition-all text-slate-700">⏮</button>
-                <button onclick="skipTime(-5)" class="w-11 h-11 bg-white border border-slate-300 rounded-2xl flex items-center justify-center text-[11px] font-bold shadow-sm hover:bg-slate-50 transition-all text-slate-700">-5s</button>
-                <button onclick="togglePlayPause()" id="play-pause-btn" class="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-600 rounded-[24px] flex items-center justify-center text-white text-2xl shadow-xl shadow-emerald-600/30 hover:scale-105 active:scale-95 transition-all duration-300">▶</button>
-                <button onclick="skipTime(5)" class="w-11 h-11 bg-white border border-slate-300 rounded-2xl flex items-center justify-center text-[11px] font-bold shadow-sm hover:bg-slate-50 transition-all text-slate-700">+5s</button>
-                <button onclick="nextSong()" class="w-11 h-11 bg-white border border-slate-300 rounded-2xl flex items-center justify-center text-xs shadow-sm hover:bg-slate-50 transition-all text-slate-700">⏭</button>
-            </div>
-        </div>
-
-        <!-- LIBRARY TAB -->
-        <div id="content-folders" class="tab-content hidden flex flex-col px-6 pb-6 space-y-4 z-10">
-            <input type="text" id="search-input" oninput="filterPlaylist(this.value)" placeholder="Search tracks..." class="bg-white border border-slate-300 rounded-2xl px-4 py-3 text-xs text-slate-900 focus:outline-none focus:border-emerald-500 shadow-inner font-medium placeholder-slate-400">
-            <h3 id="library-count" class="text-xs font-bold text-slate-500 px-1 tracking-wide">Tracks (0)</h3>
-            <div id="playlist-container" class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
-                <!-- Empty by default until user adds local files -->
+            <!-- Playback Controls -->
+            <div class="flex items-center justify-center space-x-3 pt-2">
+                <button onclick="handlePrev()" class="w-11 h-11 bg-white border border-slate-300 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-50 shadow-xs transition active:scale-95">⏮</button>
+                <button onclick="handleBackward()" class="w-10 h-10 bg-white border border-slate-300 rounded-full flex items-center justify-center text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs transition active:scale-95">-5s</button>
+                <button id="play-pause-btn" onclick="togglePlayPause()" class="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white text-xl shadow-lg hover:bg-emerald-700 transition active:scale-95">▶</button>
+                <button onclick="handleForward()" class="w-10 h-10 bg-white border border-slate-300 rounded-full flex items-center justify-center text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-xs transition active:scale-95">+5s</button>
+                <button onclick="handleNext()" class="w-11 h-11 bg-white border border-slate-300 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-50 shadow-xs transition active:scale-95">⏭</button>
             </div>
         </div>
 
-        <!-- DEVICE FILE TAB -->
-        <div id="content-device" class="tab-content hidden flex flex-col px-6 pb-6 space-y-5 z-10">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 text-center space-y-4 shadow-sm">
-                <div class="w-16 h-16 mx-auto bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl border border-blue-100">📲</div>
-                <h3 class="text-sm font-bold text-slate-800">Load Audio from Device</h3>
-                <p class="text-xs text-slate-500">Select MP3, WAV, AAC or FLAC files directly from your phone or PC storage.</p>
-                <label class="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-center py-4 rounded-2xl text-xs font-bold cursor-pointer shadow-md transition-all">
-                    📁 Browse Local Files
-                    <input type="file" accept="audio/*" multiple onchange="handleFileUpload(event)" class="hidden">
-                </label>
+        <!-- 2. LIBRARY TAB -->
+        <div id="content-folders" class="tab-content hidden flex-col px-6 pb-6 space-y-4 z-10">
+            <input type="text" id="search-input" placeholder="Search songs..." oninput="filterPlaylist(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500 shadow-xs">
+            <h3 id="library-count" class="text-xs font-bold text-slate-500 px-1">Tracks (0)</h3>
+            <div id="library-list" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- 3. FILE FROM DEVICE TAB -->
+        <div id="content-device" class="tab-content hidden flex-col px-6 pb-6 space-y-4 z-10 text-center">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 space-y-3 shadow-xs">
+                <span class="text-3xl">📁</span>
+                <h3 class="text-xs font-bold text-slate-800">Add Audio from Phone / PC</h3>
+                <p class="text-[11px] text-slate-500">Select MP3 files directly from your device storage to play instantly.</p>
+                <input type="file" id="device-file-input" accept="audio/*" multiple onchange="handleDeviceFiles(event)" class="hidden">
+                <button onclick="document.getElementById('device-file-input').click()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl shadow-md transition active:scale-95">
+                    📂 Browse Device Files
+                </button>
             </div>
         </div>
 
-        <!-- CONFIG / DOLBY ATMOS TAB -->
-        <div id="content-manage" class="tab-content hidden flex flex-col px-6 pb-6 space-y-5 max-h-[460px] overflow-y-auto z-10">
-            <div class="bg-white rounded-3xl p-5 border border-slate-200 space-y-5 shadow-sm">
-                <!-- Sub-Bass Boost -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-700 flex items-center space-x-1.5">
-                            <span>🎸</span> <span>Sub-Bass Boost</span>
-                        </span>
-                        <span id="bass-label" class="text-xs text-amber-600 font-extrabold">+10 dB</span>
+        <!-- 4. CONFIG / DOLBY ATMOS TAB -->
+        <div id="content-manage" class="tab-content hidden flex-col px-6 pb-6 space-y-4 z-10">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-4 shadow-xs">
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-700">🎸 Sub-Bass Boost</span>
+                        <span id="bass-val" class="font-extrabold text-amber-600">+10 dB</span>
                     </div>
-                    <input type="range" min="0" max="20" step="1" value="10" oninput="changeBass(this.value)" class="w-full accent-amber-500 cursor-pointer h-2 bg-slate-200 rounded-lg">
+                    <input type="range" min="0" max="20" value="10" oninput="updateBass(this.value)" class="w-full accent-amber-500 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
                 </div>
-
-                <!-- Crystal Treble -->
-                <div class="space-y-2 border-t border-slate-100 pt-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-700 flex items-center space-x-1.5">
-                            <span>✨</span> <span>Crystal Treble</span>
-                        </span>
-                        <span id="treble-label" class="text-xs text-blue-600 font-extrabold">+8 dB</span>
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-700">✨ Crystal Treble</span>
+                        <span id="treble-val" class="font-extrabold text-blue-600">+8 dB</span>
                     </div>
-                    <input type="range" min="-5" max="15" step="1" value="8" oninput="changeTreble(this.value)" class="w-full accent-blue-500 cursor-pointer h-2 bg-slate-200 rounded-lg">
+                    <input type="range" min="0" max="20" value="8" oninput="updateTreble(this.value)" class="w-full accent-blue-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
                 </div>
             </div>
 
-            <!-- Dolby Atmos Spatial Audio Suite Card matching user image -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200 space-y-4 shadow-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-800">Dolby Atmos Spatial 3D Engine</span>
-                    <input type="checkbox" id="dolby-switch" checked onchange="toggleDolby(this.checked)" class="w-5 h-5 accent-amber-500 cursor-pointer rounded">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-4 shadow-xs">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-900">Dolby Atmos Spatial 3D Engine</h3>
+                        <p class="text-[10px] text-slate-500">Immersive Surround Processing</p>
+                    </div>
+                    <input type="checkbox" id="dolby-switch" checked onchange="toggleDolby(this.checked)" class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
                 </div>
-                <div class="grid grid-cols-3 gap-2.5 border-t border-slate-100 pt-3.5 text-center">
-                    <button onclick="toggleSpatialOpt('spatial')" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-400 transition-all flex flex-col items-center group shadow-xs">
-                        <span id="dot-spatial" class="w-2 h-2 rounded-full bg-emerald-500 mb-1.5"></span>
-                        <span class="text-[10px] font-bold text-slate-700">3D Soundstage</span>
-                    </button>
-                    <button onclick="toggleSpatialOpt('height')" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-400 transition-all flex flex-col items-center group shadow-xs">
-                        <span id="dot-height" class="w-2 h-2 rounded-full bg-emerald-500 mb-1.5"></span>
-                        <span class="text-[10px] font-bold text-slate-700">Height Ch.</span>
-                    </button>
-                    <button onclick="toggleSpatialOpt('virtualizer')" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-amber-400 transition-all flex flex-col items-center group shadow-xs">
-                        <span id="dot-virtualizer" class="w-2 h-2 rounded-full bg-emerald-500 mb-1.5"></span>
-                        <span class="text-[10px] font-bold text-slate-700">Surround Wide</span>
-                    </button>
+                <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
+                    <div class="p-2 rounded-xl border border-slate-200 bg-slate-50">
+                        <div class="w-2 h-2 mx-auto rounded-full bg-emerald-500 mb-1"></div>
+                        <span class="text-[9px] font-semibold text-slate-600">3D Soundstage</span>
+                    </div>
+                    <div class="p-2 rounded-xl border border-slate-200 bg-slate-50">
+                        <div class="w-2 h-2 mx-auto rounded-full bg-emerald-500 mb-1"></div>
+                        <span class="text-[9px] font-semibold text-slate-600">Height Ch.</span>
+                    </div>
+                    <div class="p-2 rounded-xl border border-slate-200 bg-slate-50">
+                        <div class="w-2 h-2 mx-auto rounded-full bg-emerald-500 mb-1"></div>
+                        <span class="text-[9px] font-semibold text-slate-600">Surround Wide</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -149,277 +143,196 @@
     </div>
 
     <script>
-        let playlist = []; // Starts completely empty as requested
+        // 🎵 APNE GAANE YAHAN ADD KAREIN (TITLE AUR MP3 LINK)
+        let playlist = [
+            {
+                id: '1',
+                title: 'Stay with me',
+                uri: 'Alan Walker, Ava Max Style - Stay with me ( Official Music, Cover)_256k.mp3'
+            }
+        ];
+
         let currentIndex = 0;
         let isPlaying = false;
-        let dolbyEnabled = true;
-        let spatialOptions = { spatial: true, height: true, virtualizer: true };
-
+        
         const audio = document.getElementById('audioElement');
-        let audioCtx = null;
-        let sourceNode = null;
-        let gainNode = null;
-        let bassFilter = null;
-        let trebleFilter = null;
+        let audioCtx, sourceNode, gainNode, bassFilter, trebleFilter;
 
-        window.switchTab = function(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`content-${tabId}`).classList.remove('hidden');
-
-            ['player', 'folders', 'device', 'manage'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if (t === tabId) {
-                    btn.className = "py-2.5 text-center text-[10px] font-bold rounded-xl transition-all duration-300 bg-emerald-600 text-white shadow-md";
-                } else {
-                    btn.className = "py-2.5 text-center text-[10px] font-semibold rounded-xl transition-all duration-300 text-slate-600 hover:text-slate-900";
-                }
-            });
-        };
-
-        function setupWebAudio() {
+        function initAudioContext() {
             if (!audioCtx) {
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    audioCtx = new AudioContext();
-                    sourceNode = audioCtx.createMediaElementSource(audio);
-                    
-                    gainNode = audioCtx.createGain();
-                    gainNode.gain.value = 1.0;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+                sourceNode = audioCtx.createMediaElementSource(audio);
+                
+                gainNode = audioCtx.createGain();
+                bassFilter = audioCtx.createBiquadFilter();
+                trebleFilter = audioCtx.createBiquadFilter();
 
-                    bassFilter = audioCtx.createBiquadFilter();
-                    bassFilter.type = 'lowshelf';
-                    bassFilter.frequency.value = 90;
-                    bassFilter.gain.value = 10;
+                bassFilter.type = 'lowshelf';
+                bassFilter.frequency.value = 150;
+                bassFilter.gain.value = 10;
 
-                    trebleFilter = audioCtx.createBiquadFilter();
-                    trebleFilter.type = 'highshelf';
-                    trebleFilter.frequency.value = 4000;
-                    trebleFilter.gain.value = 8;
+                trebleFilter.type = 'highshelf';
+                trebleFilter.frequency.value = 4000;
+                trebleFilter.gain.value = 8;
 
-                    sourceNode.connect(bassFilter);
-                    bassFilter.connect(trebleFilter);
-                    trebleFilter.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                } catch(e) {
-                    console.log("Web Audio DSP init error:", e);
-                }
+                sourceNode.connect(bassFilter);
+                bassFilter.connect(trebleFilter);
+                trebleFilter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
             }
-            if (audioCtx && audioCtx.state === 'suspended') {
+            if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
         }
 
-        window.changeVolume = function(val) {
-            if (gainNode) {
-                gainNode.gain.value = parseFloat(val);
-            }
-            if (audio) {
-                audio.volume = parseFloat(val);
-            }
-            document.getElementById('vol-label').innerText = `${Math.round(val * 100)}%`;
-        }
-
-        window.changeBass = function(val) {
-            if (bassFilter && dolbyEnabled) {
-                bassFilter.gain.value = parseFloat(val);
-            }
-            document.getElementById('bass-label').innerText = `+${val} dB`;
-        }
-
-        window.changeTreble = function(val) {
-            if (trebleFilter && dolbyEnabled) {
-                trebleFilter.gain.value = parseFloat(val);
-            }
-            const prefix = val > 0 ? '+' : '';
-            document.getElementById('treble-label').innerText = `${prefix}${val} dB`;
-        }
-
-        window.toggleDolby = function(enabled) {
-            dolbyEnabled = enabled;
-            if (bassFilter && trebleFilter) {
-                bassFilter.gain.value = enabled ? parseFloat(document.querySelector('input[oninput*="changeBass"]').value) : 0;
-                trebleFilter.gain.value = enabled ? parseFloat(document.querySelector('input[oninput*="changeTreble"]').value) : 0;
-            }
-        }
-
-        window.toggleSpatialOpt = function(opt) {
-            spatialOptions[opt] = !spatialOptions[opt];
-            const dot = document.getElementById(`dot-${opt}`);
-            if (spatialOptions[opt]) {
-                dot.className = "w-2 h-2 rounded-full bg-emerald-500 mb-1.5";
-            } else {
-                dot.className = "w-2 h-2 rounded-full bg-slate-300 mb-1.5";
-            }
-        }
-
-        window.loadSong = function(index, autoPlay = true) {
-            if (playlist.length === 0) return;
-            currentIndex = index;
-            const song = playlist[currentIndex];
-            
-            document.getElementById('current-song-title').innerText = song.title;
-            document.getElementById('playback-status-msg').innerText = "Loading High-Resolution Stream...";
-            
-            audio.src = song.uri;
-            audio.currentTime = 0;
-            setupWebAudio();
-
-            if (autoPlay) {
-                audio.play().then(() => {
-                    isPlaying = true;
-                    updatePlayButton();
-                    document.getElementById('playback-status-msg').innerText = "Playing Dolby Spatial Audio";
-                }).catch(err => {
-                    console.log("Autoplay restriction:", err);
-                    document.getElementById('playback-status-msg').innerText = "Click ▶ Play to Start Audio";
-                });
-            } else {
-                document.getElementById('playback-status-msg').innerText = "Ready for Playback";
-            }
-            updatePlaylistHighlight();
-        }
-
-        window.togglePlayPause = function() {
-            if (playlist.length === 0) {
-                switchTab('device');
-                return;
-            }
-            setupWebAudio();
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                document.getElementById('playback-status-msg').innerText = "Playback Paused";
-            } else {
-                if (!audio.src) {
-                    loadSong(currentIndex, true);
-                    return;
-                }
-                audio.play().then(() => {
-                    isPlaying = true;
-                    updatePlayButton();
-                    document.getElementById('playback-status-msg').innerText = "Playing Dolby Spatial Audio";
-                }).catch(err => {
-                    console.log("Play error:", err);
-                    document.getElementById('playback-status-msg').innerText = "Playback Error. Try another track.";
-                });
-            }
-            updatePlayButton();
-        }
-
-        function updatePlayButton() {
-            const btn = document.getElementById('play-pause-btn');
-            btn.innerText = isPlaying ? '⏸' : '▶';
-        }
-
-        window.nextSong = function() {
-            if (playlist.length === 0) return;
-            const nextIdx = (currentIndex + 1) % playlist.length;
-            loadSong(nextIdx, true);
-        }
-
-        window.prevSong = function() {
-            if (playlist.length === 0) return;
-            const prevIdx = (currentIndex - 1 + playlist.length) % playlist.length;
-            loadSong(prevIdx, true);
-        }
-
-        window.skipTime = function(secs) {
-            audio.currentTime = Math.min(audio.duration || 0, Math.max(0, audio.currentTime + secs));
-        }
-
-        window.seekAudio = function(event) {
-            const container = document.getElementById('progress-container');
-            const rect = container.getBoundingClientRect();
-            const pos = (event.clientX - rect.left) / rect.width;
-            if (audio.duration) {
-                audio.currentTime = pos * audio.duration;
-            }
-        }
+        window.onload = function() {
+            renderLibrary();
+        };
 
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const percent = (audio.currentTime / audio.duration) * 100;
-                document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+                document.getElementById('progress-bar-fill').style.width = percent + '%';
                 document.getElementById('current-time').innerText = formatTime(audio.currentTime);
                 document.getElementById('duration-time').innerText = formatTime(audio.duration);
             }
         });
 
-        audio.addEventListener('ended', () => {
-            nextSong();
-        });
+        audio.addEventListener('ended', handleNext);
 
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        function renderPlaylistViews(filter = '') {
-            const container = document.getElementById('playlist-container');
-            container.innerHTML = '';
+        function switchTab(tabId) {
+            ['player', 'folders', 'device', 'manage'].forEach(t => {
+                document.getElementById('content-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).className = "py-2.5 text-center text-[10px] font-semibold rounded-xl transition-all duration-300 text-slate-600 hover:text-slate-900";
+            });
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.getElementById('tab-' + tabId).className = "py-2.5 text-center text-[10px] font-bold rounded-xl transition-all duration-300 bg-emerald-600 text-white shadow-md";
+        }
 
-            const filtered = playlist.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
-            document.getElementById('library-count').innerText = `Tracks (${filtered.length})`;
+        function loadSong(index) {
+            if (playlist.length === 0) return;
+            currentIndex = index;
+            const song = playlist[currentIndex];
+            audio.src = song.uri;
+            document.getElementById('current-song-title').innerText = song.title;
+            document.getElementById('playback-status-msg').innerText = "Playing in Dolby Atmos";
+            initAudioContext();
+            audio.play().then(() => {
+                isPlaying = true;
+                updatePlayButton();
+            }).catch(e => console.log(e));
+            renderLibrary();
+        }
 
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-10 text-slate-400 text-xs font-medium">
-                        No songs in library yet.<br>Go to the 📲 File tab to add music!
-                    </div>
-                `;
+        function togglePlayPause() {
+            if (playlist.length === 0) {
+                alert('Please add a song from the File tab first!');
+                switchTab('device');
                 return;
             }
+            initAudioContext();
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+            } else {
+                if (!audio.src) loadSong(currentIndex);
+                else audio.play();
+                isPlaying = true;
+            }
+            updatePlayButton();
+        }
 
-            filtered.forEach((song) => {
-                const origIndex = playlist.findIndex(s => s.id === song.id);
-                const isActive = origIndex === currentIndex;
+        function updatePlayButton() {
+            document.getElementById('play-pause-btn').innerText = isPlaying ? '⏸' : '▶';
+        }
 
+        function handleNext() {
+            if (playlist.length === 0) return;
+            currentIndex = (currentIndex + 1) % playlist.length;
+            loadSong(currentIndex);
+        }
+
+        function handlePrev() {
+            if (playlist.length === 0) return;
+            currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+            loadSong(currentIndex);
+        }
+
+        function handleForward() { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5); }
+        function handleBackward() { audio.currentTime = Math.max(0, audio.currentTime - 5); }
+
+        function seekAudio(e) {
+            if (!audio.duration) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = pos * audio.duration;
+        }
+
+        function changeVolume(val) {
+            document.getElementById('vol-label').innerText = val + '%';
+            audio.volume = val / 100;
+            if (gainNode) gainNode.gain.value = (val / 100) * (document.getElementById('dolby-switch').checked ? 1.2 : 1.0);
+        }
+
+        function updateBass(val) {
+            document.getElementById('bass-val').innerText = '+' + val + ' dB';
+            if (bassFilter) bassFilter.gain.value = parseFloat(val);
+        }
+
+        function updateTreble(val) {
+            document.getElementById('treble-val').innerText = '+' + val + ' dB';
+            if (trebleFilter) trebleFilter.gain.value = parseFloat(val);
+        }
+
+        function toggleDolby(enabled) {
+            if (gainNode) gainNode.gain.value = enabled ? 1.2 : 1.0;
+        }
+
+        function handleDeviceFiles(e) {
+            const files = e.target.files;
+            if (!files.length) return;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                playlist.push({
+                    id: Date.now() + i,
+                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    uri: URL.createObjectURL(file)
+                });
+            }
+            renderLibrary();
+            switchTab('folders');
+            if (!isPlaying && playlist.length > 0) {
+                loadSong(playlist.length - files.length);
+            }
+        }
+
+        function renderLibrary() {
+            const listEl = document.getElementById('library-list');
+            document.getElementById('library-count').innerText = `Tracks (${playlist.length})`;
+            listEl.innerHTML = '';
+            playlist.forEach((song, idx) => {
                 const item = document.createElement('div');
-                item.className = `p-4 rounded-2xl border cursor-pointer transition-all duration-300 ${isActive ? 'border-emerald-500 bg-emerald-50 text-slate-900 shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`;
-                item.onclick = () => {
-                    loadSong(origIndex, true);
-                    switchTab('player');
-                };
-                item.innerHTML = `
-                    <p class="text-xs font-bold truncate ${isActive ? 'text-emerald-700' : 'text-slate-800'}">${song.title}</p>
-                    <p class="text-[10px] text-slate-500 mt-1 font-medium">${song.duration} • Dolby Atmos Lossless</p>
-                `;
-                container.appendChild(item);
+                item.className = `p-3 rounded-xl border cursor-pointer transition flex justify-between items-center ${currentIndex === idx ? 'bg-emerald-50 border-emerald-500 shadow-xs' : 'bg-white border-slate-200 hover:bg-slate-50'}`;
+                item.innerHTML = `<span class="text-xs font-bold truncate ${currentIndex === idx ? 'text-emerald-800' : 'text-slate-800'}">${song.title}</span>`;
+                item.onclick = () => loadSong(idx);
+                listEl.appendChild(item);
             });
         }
 
-        window.filterPlaylist = function(query) {
-            renderPlaylistViews(query);
-        }
-
-        function updatePlaylistHighlight() {
-            renderPlaylistViews();
-        }
-
-        window.handleFileUpload = function(event) {
-            const files = event.target.files;
-            if (files && files.length > 0) {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const url = URL.createObjectURL(file);
-                    const newSong = {
-                        id: url + Math.random(),
-                        title: file.name,
-                        duration: 'Local',
-                        uri: url
-                    };
-                    playlist.push(newSong);
-                }
-                renderPlaylistViews();
-                loadSong(playlist.length - files.length, true);
-                switchTab('player');
+        function filterPlaylist(query) {
+            const items = document.getElementById('library-list').children;
+            for (let item of items) {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query.toLowerCase()) ? 'flex' : 'none';
             }
         }
-
-        window.onload = () => {
-            renderPlaylistViews();
-        };
     </script>
 </body>
 </html>
