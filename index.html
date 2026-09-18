@@ -22,7 +22,7 @@
 
     <div class="w-full max-w-md bg-gradient-to-b from-white to-slate-50 shadow-2xl rounded-[32px] overflow-hidden flex flex-col border border-slate-200 relative">
         
-        <!-- App Navigation Tabs (4 Tabs) -->
+        <!-- App Navigation Tabs -->
         <div class="grid grid-cols-4 gap-1 bg-slate-200/80 m-6 p-1.5 rounded-2xl border border-slate-300 z-10">
             <button onclick="switchTab('player')" id="tab-player" class="py-2.5 text-center text-[10px] font-bold rounded-xl transition-all duration-300 bg-emerald-600 text-white shadow-md">🎵 Player</button>
             <button onclick="switchTab('folders')" id="tab-folders" class="py-2.5 text-center text-[10px] font-semibold rounded-xl transition-all duration-300 text-slate-600 hover:text-slate-900">📁 Library</button>
@@ -40,7 +40,7 @@
                     <span class="text-3xl">🎧</span>
                 </div>
                 <h2 id="current-song-title" class="text-sm font-bold text-slate-900 truncate px-2 tracking-tight">No Song Selected</h2>
-                <p id="playback-status-msg" class="text-xs text-emerald-600 font-medium mt-1">Select a song from Library or File tab</p>
+                <p id="playback-status-msg" class="text-xs text-emerald-600 font-medium mt-1">Select from Library tab</p>
             </div>
 
             <!-- Time Progress Bar -->
@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <!-- 4. CONFIG / DOLBY ATMOS TAB -->
+        <!-- 4. CONFIG TAB -->
         <div id="content-manage" class="tab-content hidden flex-col px-6 pb-6 space-y-4 z-10">
             <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-4 shadow-xs">
                 <div class="space-y-1.5">
@@ -123,53 +123,38 @@
                     </div>
                     <input type="checkbox" id="dolby-switch" checked onchange="toggleDolby(this.checked)" class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
                 </div>
-                <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
-                    <div class="p-2 rounded-xl border border-slate-200 bg-slate-50">
-                        <div class="w-2 h-2 mx-auto rounded-full bg-emerald-500 mb-1"></div>
-                        <span class="text-[9px] font-semibold text-slate-600">3D Soundstage</span>
-                    </div>
-                    <div class="p-2 rounded-xl border border-slate-200 bg-slate-50">
-                        <div class="w-2 h-2 mx-auto rounded-full bg-emerald-500 mb-1"></div>
-                        <span class="text-[9px] font-semibold text-slate-600">Height Ch.</span>
-                    </div>
-                    <div class="p-2 rounded-xl border border-slate-200 bg-slate-50">
-                        <div class="w-2 h-2 mx-auto rounded-full bg-emerald-500 mb-1"></div>
-                        <span class="text-[9px] font-semibold text-slate-600">Surround Wide</span>
-                    </div>
-                </div>
             </div>
         </div>
 
     </div>
 
     <script>
-        // 🎵 APNE GAANE YAHAN ADD KAREIN (TITLE AUR MP3 LINK)
-let playlist = [
-    {
-        id: '1',
-        title: 'Stay with me',
-        uri: 'Alan Walker, Ava Max Style - Stay with me ( Official Music, Cover)_256k.mp3'
-    },
-    {
-        id: '2',
-        title: 'Bujale Bujibi',
-        uri: 'Bujale_Bujibi_-_Parthajyoti_Baruah___Nilakshi_Neog___Pranabjyoti_Gogoi___Official_Lyrical_Video(128k).mp3'
-    },
-    {
-        id: '3',
-        title: 'Fijord Moonlight',
-        uri: 'Fijord Moonlight - Draugr Beatz (Lyrics) TikTok Version_256k.mp3'
-    },
-    {
-        id: '4',
-        title: 'Jibonor Jonak',
-        uri: 'Jibonor Jonak _ Koka Deuta Nati Aru Hati 2 _ Nahid Afrin & Prabin Bora _ In _256k.mp3'
-    }
-];
+        // 👉 Exact filenames mapped to your repository files
+        let playlist = [
+            {
+                id: '1',
+                title: 'Stay with me',
+                uri: 'Alan Walker, Ava Max Style - Stay with me ( Official Music, Cover)_256k.mp3'
+            },
+            {
+                id: '2',
+                title: 'Bujale Bujibi',
+                uri: 'Bujale_Bujibi_-_Parthajyoti_Baruah___Nilakshi_Neog___Pranabjyoti_Gogoi___Official_Lyrical_Video(128k).mp3'
+            },
+            {
+                id: '3',
+                title: 'Fijord Moonlight',
+                uri: 'Fijord Moonlight - Draugr Beatz (Lyrics) TikTok Version_256k.mp3'
+            },
+            {
+                id: '4',
+                title: 'Jibonor Jonak',
+                uri: 'Jibonor Jonak _ Koka Deuta Nati Aru Hati 2 _ Nahid Afrin & Prabin Bora _ In _256k.mp3'
+            }
+        ];
 
         let currentIndex = 0;
         let isPlaying = false;
-        
         const audio = document.getElementById('audioElement');
         let audioCtx, sourceNode, gainNode, bassFilter, trebleFilter;
 
@@ -178,7 +163,6 @@ let playlist = [
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContext();
                 sourceNode = audioCtx.createMediaElementSource(audio);
-                
                 gainNode = audioCtx.createGain();
                 bassFilter = audioCtx.createBiquadFilter();
                 trebleFilter = audioCtx.createBiquadFilter();
@@ -328,7 +312,7 @@ let playlist = [
             }
         }
 
-        function renderLibrary() {
+    function renderLibrary() {
             const listEl = document.getElementById('library-list');
             document.getElementById('library-count').innerText = `Tracks (${playlist.length})`;
             listEl.innerHTML = '';
