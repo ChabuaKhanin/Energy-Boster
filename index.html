@@ -129,7 +129,6 @@
     </div>
 
     <script>
-        // 👉 Exact filenames mapped to your repository files
         let playlist = [
             {
                 id: '1',
@@ -312,7 +311,7 @@
             }
         }
 
-    function renderLibrary() {
+        function renderLibrary() {
             const listEl = document.getElementById('library-list');
             document.getElementById('library-count').innerText = `Tracks (${playlist.length})`;
             listEl.innerHTML = '';
